@@ -1,0 +1,14 @@
+[features]
+seeds = false
+[programs.devnet]
+solana_dapp = "<insert_program_id_here>"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "localnet"
+wallet = "<insert_local_wallet_path_here>"
+
+[scripts]
+test = "node tests/solanaDapp.js"
