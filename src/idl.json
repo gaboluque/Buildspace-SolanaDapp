@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "solana_dapp",
   "instructions": [
     {
@@ -43,6 +43,22 @@
           "type": "string"
         }
       ]
+    },
+    {
+      "name": "likeGif",
+      "accounts": [
+        {
+          "name": "baseAccount",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "gifIndex",
+          "type": "string"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -80,6 +96,10 @@
           {
             "name": "userAddress",
             "type": "publicKey"
+          },
+          {
+            "name": "likes",
+            "type": "u64"
           }
         ]
       }

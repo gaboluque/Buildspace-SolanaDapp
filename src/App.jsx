@@ -7,7 +7,7 @@ import { Program, Provider, web3 } from "@project-serum/anchor";
 import kp from "./keypair.json";
 
 // SystemProgram is a reference to the Solana runtime!
-const { SystemProgram, Keypair } = web3;
+const { SystemProgram } = web3;
 
 const arr = Object.values(kp._keypair.secretKey);
 const secret = new Uint8Array(arr);
@@ -87,9 +87,28 @@ const App = () => {
       );
 
       console.log("Got the account", account);
+      console.log(account);
       setGifList(account.gifList);
     } catch (error) {
       console.log("Error in getGifList: ", error);
+      setGifList(null);
+    }
+  };
+
+  const likeGif = async (gifIndex) => {
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+
+      await program.rpc.likeGif(`${gifIndex}`, {
+        accounts: {
+          baseAccount: baseAccount.publicKey,
+        },
+      });
+
+      await getGifList();
+    } catch (error) {
+      console.log("Error in likeGif: ", error);
       setGifList(null);
     }
   };
@@ -214,6 +233,8 @@ const App = () => {
             <div className="gif-item" key={index}>
               <img src={gif.gifLink} alt={gif.gifLink} />
               <span style={{color: "white"}}>{gif.userAddress.toString()}</span>
+              <p style={{color: "white"}}>{gif.likes.toString()} votes</p>
+              <button onClick={() => likeGif(index)}>❤️</button>
             </div>
           ))}
         </div>

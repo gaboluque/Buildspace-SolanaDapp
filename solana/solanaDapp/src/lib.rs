@@ -5,6 +5,7 @@ declare_id!("<insert_program_id_here>");
 #[program]
 pub mod solana_dapp {
   use super::*;
+  
   pub fn start_stuff_off(ctx: Context<StartStuffOff>) -> ProgramResult {
     // Get a reference to the account
     let base_account = &mut ctx.accounts.base_account;
@@ -23,11 +24,23 @@ pub mod solana_dapp {
     let item = ItemStruct {
       gif_link: gif_link.to_string(),
       user_address: *user.to_account_info().key,
+      likes: 0,
     };
 
     // Add it to the gif_list vector.
     base_account.gif_list.push(item);
     base_account.total_gifs += 1;
+
+    Ok(())
+  }
+
+  pub fn like_gif(ctx: Context<LikeGif>, gif_index: String) -> ProgramResult {
+    let base_account = &mut ctx.accounts.base_account;
+    let index: usize = gif_index.to_string().parse().unwrap();
+
+    let gif = &mut base_account.gif_list[index];
+    gif.likes += 1;
+
     Ok(())
   }
 }
@@ -49,17 +62,24 @@ pub struct AddGif<'info> {
   pub user: Signer<'info>,
 }
 
+#[derive(Accounts)]
+pub struct LikeGif<'info> {
+  #[account(mut)]
+  pub base_account: Account<'info, BaseAccount>,
+}
+
 // Create a custom struct for us to work with.
 #[derive(Debug, Clone, AnchorSerialize, AnchorDeserialize)]
 pub struct ItemStruct {
   pub gif_link: String,
   pub user_address: Pubkey,
+  pub likes: u64,
 }
 
 // Tell Solana what we want to store on this account.
 #[account]
 pub struct BaseAccount {
   pub total_gifs: u64,
-	// Attach a Vector of type ItemStruct to the account.
+  // Attach a Vector of type ItemStruct to the account.
   pub gif_list: Vec<ItemStruct>,
 }
